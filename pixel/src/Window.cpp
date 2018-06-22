@@ -158,7 +158,7 @@ namespace Pixel {
     int texture_id = canvas.canvas_->update_texture();
     glUseProgram(prog);
     if (canvas.canvas_->opacity == Canvas::translucent) {
-      glBlendMode(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+      glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
       glEnable(GL_BLEND);
     } else {
       glDisable(GL_BLEND);
