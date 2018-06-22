@@ -1,8 +1,25 @@
 #include <pixel/Canvas.hpp>
 #include <GL/glew.h>
 #include <pixel/Color.hpp>
+#include <stdexcept>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 namespace Pixel {
+  Canvas::Canvas(std::string filename) 
+  {
+    int x,y,n;
+    unsigned char *data = stbi_load(filename.c_str(), &x, &y, &n, 5);
+    if (!data) throw std::runtime_error("Cannot load image; invalid image");
+    width_ = x;
+    height_ = y;
+    canvas_.resize(width_*height_);
+    for (size_t i = 0; i < width_*height_; i++) {
+      canvas_[i] = Color(data[i*n] / 255.0f, data[i*n+1] / 255.0f, data[i*n+2] / 255.0f, data[i*n+3] / 255.0f).to_uint32_t();
+    }
+    stbi_image_free(data);
+    glGenTextures(1, &texture_id);
+  }
   Canvas::Canvas(uint32_t width, uint32_t height) 
   : width_(width)
   , height_(height)

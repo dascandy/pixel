@@ -3,10 +3,12 @@
 #include <cstdint>
 #include <vector>
 #include "Color.hpp"
+#include <string>
 
 namespace Pixel {
   class Canvas {
   public:
+    Canvas(std::string filename);
     Canvas(uint32_t width, uint32_t height);
     ~Canvas();
     void set_transparency(Color color);
