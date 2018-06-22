@@ -9,13 +9,14 @@ namespace Pixel {
   Canvas::Canvas(std::string filename) 
   {
     int x,y,n;
-    unsigned char *data = stbi_load(filename.c_str(), &x, &y, &n, 5);
+    unsigned char *data = stbi_load(filename.c_str(), &x, &y, &n, 4);
     if (!data) throw std::runtime_error("Cannot load image; invalid image");
+    n = 4;
     width_ = x;
     height_ = y;
     canvas_.resize(width_*height_);
     for (size_t i = 0; i < width_*height_; i++) {
-      canvas_[i] = Color(data[i*n] / 255.0f, data[i*n+1] / 255.0f, data[i*n+2] / 255.0f, data[i*n+3] / 255.0f).to_uint32_t();
+      canvas_[(i%width_) + (height_ - i / width_ - 1) * width_] = Color(data[i*n] / 255.0f, data[i*n+1] / 255.0f, data[i*n+2] / 255.0f, data[i*n+3] / 255.0f).to_uint32_t();
     }
     stbi_image_free(data);
     glGenTextures(1, &texture_id);
@@ -38,6 +39,9 @@ namespace Pixel {
     uint32_t v = color.to_uint32_t();
     for (auto& pixel : canvas_) pixel = v;
   }
+  Color Canvas::get(uint32_t x, uint32_t y) {
+    return Color(canvas_[width_*y+x]);
+  }
   void Canvas::plot(uint32_t x, uint32_t y, Color color) {
     canvas_[width_*y+x] = color.to_uint32_t();
   }
@@ -50,7 +54,7 @@ namespace Pixel {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, canvas_.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_BGRA, GL_UNSIGNED_BYTE, canvas_.data());
     return texture_id;
   }
 }

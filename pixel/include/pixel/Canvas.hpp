@@ -14,6 +14,7 @@ namespace Pixel {
     void set_transparency(Color color);
     void set_translucent();
     void clear(Color color);
+    Color get(uint32_t x, uint32_t y);
     void plot(uint32_t x, uint32_t y, Color color);
     int update_texture();
     uint32_t width() { return width_; }

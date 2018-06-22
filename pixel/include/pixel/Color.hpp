@@ -19,7 +19,7 @@ namespace Pixel {
     }
     uint32_t to_uint32_t() {
       uint8_t rb = r * 255, gb = g * 255, bb = b * 255, ab = a * 255;
-      return ((uint32_t)ab << 24) | (bb << 16) | (gb << 8) | (rb);
+      return ((uint32_t)ab << 24) | (rb << 16) | (gb << 8) | (bb);
     };
     static const Color AliceBlue;
     static const Color AntiqueWhite;
