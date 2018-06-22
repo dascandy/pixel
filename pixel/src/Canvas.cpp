@@ -10,6 +10,13 @@ namespace Pixel {
     canvas_.resize(width*height);
     glGenTextures(1, &texture_id);
   }
+  void Canvas::set_transparency(Color color) {
+    opacity = keyed;
+    transparency_key = color;
+  }
+  void Canvas::set_translucent() {
+    opacity = translucent;
+  }
   void Canvas::clear(Color color) {
     uint32_t v = color.to_uint32_t();
     for (auto& pixel : canvas_) pixel = v;

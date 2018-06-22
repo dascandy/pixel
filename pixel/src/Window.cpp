@@ -45,10 +45,14 @@ static int compileShader(int prog, const char* source, int type)
 const char vertex_shader[] = 
 "#version 330\n"
 "\n"
+"uniform vec4 sc_pos;\n"
+"\n"
 "in vec4 in_pos;\n"
 "out vec4 f_pos;\n"
 "\n"
 "void main() {\n"
+"  mat2 r = mat2(sin(in_pos.w), cos(in_pos.w), cos(in_pos.w), -sin(in_pos.w));\n"
+"  gl_Position = vec4(((r * in_pos.xy) * sc_pos.z) + sc_pos.xy * sc_pos.z, in_pos.zw);\n"
 "  gl_Position = in_pos;\n"
 "  f_pos = in_pos;\n"
 "}\n"
@@ -58,11 +62,17 @@ const char vertex_shader[] =
 const char fragment_shader[] = 
 "#version 330\n"
 "\n"
+"uniform vec4 sc_attr;\n"
 "uniform sampler2D tex;\n"
+"uniform vec4 key;\n"
+"uniform int keyed;\n"
+"\n"
 "in vec4 f_pos;\n"
 "\n"
 "void main() {\n"
-"  gl_FragColor = texture(tex, 0.5 * f_pos.xy + vec2(0.5, 0.5));\n"
+"  vec4 color = texture(tex, 0.5 * (f_pos.xy * sc_attr.zw + sc_attr.xy) + vec2(0.5, 0.5));\n"
+"  if (keyed == 1 && key == color) discard;\n"
+"  gl_FragColor = color;\n"
 "}\n"
 "\n"
 ;
@@ -134,13 +144,24 @@ namespace Pixel {
 
     SDL_Quit();
   }
+
   bool Window::shouldExit() {
     return shouldExit_;
   }
-  void Window::show(Canvas& canvas) {
-    int texture_id = canvas.update_texture();
 
+
+  void Window::text(std::string_view str, uint32_t x, uint32_t y, float scale, float rotation) {
+    // TODO
+  }
+
+  void Window::draw(const Subcanvas& canvas, uint32_t x, uint32_t y, float scale, float rotation) {
+    int texture_id = canvas.canvas_->update_texture();
     glUseProgram(prog);
+    glUniform4f(glGetUniformLocation(prog, "sc_attr"), float(canvas.x) / canvas.canvas_->width(), float(canvas.y) / canvas.canvas_->height(), float(canvas.width) / canvas.canvas_->width(), float(canvas.height) / canvas.canvas_->height());
+    glUniform4f(glGetUniformLocation(prog, "sc_pos"), x, y, scale / baseScale, rotation);
+    glUniform4f(glGetUniformLocation(prog, "key"), canvas.canvas_->transparency_key.r, canvas.canvas_->transparency_key.g, canvas.canvas_->transparency_key.b, canvas.canvas_->transparency_key.a);
+    glUniform1i(glGetUniformLocation(prog, "keyed"), canvas.canvas_->opacity == Canvas::keyed);
+    // TODO: handle transparency
     glUniform1i(glGetUniformLocation(prog, "tex"), 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -150,7 +171,14 @@ namespace Pixel {
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 16, (void*)0);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+  }
 
+  void Window::show(const Subcanvas& subcanvas) {
+    draw(subcanvas, subcanvas.canvas_->width() / 2, subcanvas.canvas_->height() / 2, baseScale, 0);
+    show();
+  }
+
+  void Window::show() {
     SDL_GL_SwapWindow((SDL_Window*)surface);
     SDL_Event event;
     while (SDL_PollEvent(&event))
