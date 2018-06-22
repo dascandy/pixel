@@ -157,11 +157,17 @@ namespace Pixel {
   void Window::draw(const Subcanvas& canvas, uint32_t x, uint32_t y, float scale, float rotation) {
     int texture_id = canvas.canvas_->update_texture();
     glUseProgram(prog);
+    if (canvas.canvas_->opacity == Canvas::translucent) {
+      glBlendMode(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+      glEnable(GL_BLEND);
+    } else {
+      glDisable(GL_BLEND);
+    }
+
     glUniform4f(glGetUniformLocation(prog, "sc_attr"), float(canvas.x) / canvas.canvas_->width(), float(canvas.y) / canvas.canvas_->height(), float(canvas.width) / canvas.canvas_->width(), float(canvas.height) / canvas.canvas_->height());
     glUniform4f(glGetUniformLocation(prog, "sc_pos"), x, y, scale / baseScale, rotation);
     glUniform4f(glGetUniformLocation(prog, "key"), canvas.canvas_->transparency_key.r, canvas.canvas_->transparency_key.g, canvas.canvas_->transparency_key.b, canvas.canvas_->transparency_key.a);
     glUniform1i(glGetUniformLocation(prog, "keyed"), canvas.canvas_->opacity == Canvas::keyed);
-    // TODO: handle transparency
     glUniform1i(glGetUniformLocation(prog, "tex"), 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture_id);
