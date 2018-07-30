@@ -21,6 +21,10 @@ namespace Pixel {
       uint8_t rb = r * 255, gb = g * 255, bb = b * 255, ab = a * 255;
       return ((uint32_t)ab << 24) | (rb << 16) | (gb << 8) | (bb);
     };
+    bool operator==(const Color& c) {
+      return r == c.r && g == c.g && b == c.b && a == c.a;
+    }
+    bool operator!=(const Color& c) { return !(*this == c); }
     static const Color AliceBlue;
     static const Color AntiqueWhite;
     static const Color Aqua;

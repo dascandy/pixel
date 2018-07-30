@@ -39,7 +39,7 @@ namespace Pixel {
     uint32_t v = color.to_uint32_t();
     for (auto& pixel : canvas_) pixel = v;
   }
-  Color Canvas::get(uint32_t x, uint32_t y) {
+  Color Canvas::get(uint32_t x, uint32_t y) const {
     return Color(canvas_[width_*y+x]);
   }
   void Canvas::plot(uint32_t x, uint32_t y, Color color) {
@@ -47,6 +47,20 @@ namespace Pixel {
   }
   Canvas::~Canvas() {
     glDeleteTextures(1, &texture_id);
+    if (fbo)
+      glDeleteFramebuffers(1, &fbo);
+  }
+  void Canvas::set_as_target() {
+    if (!fbo) 
+      glGenFramebuffers(1, &fbo);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture_id, 0);
+    glViewport(0, 0, width_, height_);
+  }
+  void Canvas::read() {
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, canvas_.data());
   }
   int Canvas::update_texture() {
     glBindTexture(GL_TEXTURE_2D, texture_id);

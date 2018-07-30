@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdint>
 #include <atomic>
+#include "Canvas.hpp"
 
 namespace Pixel {
   class Canvas;
@@ -29,10 +30,12 @@ namespace Pixel {
     void set_base_scale(float base) { baseScale = base; }
     void set_effect(Effect type = get_random_effect(), float strength = 1.0f);
     bool shouldExit();
+    void set_as_target();
     void show(const Subcanvas& canvas);
     void draw(const Subcanvas& canvas, uint32_t x, uint32_t y, float scale = 1, float rotation = 0);
     void text(std::string_view str, uint32_t x, uint32_t y, float scale = 1, float rotation = 0);
     void show();
+    Canvas read();
   private:
     std::atomic<bool> shouldExit_ = false;
     int width, height;

@@ -149,9 +149,20 @@ namespace Pixel {
     return shouldExit_;
   }
 
+  void Window::set_as_target() {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, width, height);
+  }
 
   void Window::text(std::string_view str, uint32_t x, uint32_t y, float scale, float rotation) {
     // TODO
+  }
+
+  Canvas Window::read() {
+    set_as_target();
+    Canvas c(width, height);
+    glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, c.canvas_.data());
+    return c;
   }
 
   void Window::draw(const Subcanvas& canvas, uint32_t x, uint32_t y, float scale, float rotation) {

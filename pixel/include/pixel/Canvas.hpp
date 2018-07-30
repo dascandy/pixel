@@ -14,15 +14,18 @@ namespace Pixel {
     void set_transparency(Color color);
     void set_translucent();
     void clear(Color color);
-    Color get(uint32_t x, uint32_t y);
+    Color get(uint32_t x, uint32_t y) const;
     void plot(uint32_t x, uint32_t y, Color color);
     int update_texture();
+    void set_as_target();
+    void read();
     uint32_t width() { return width_; }
     uint32_t height() { return height_; }
   private:
     uint32_t width_, height_;
     std::vector<uint32_t> canvas_;
     unsigned int texture_id;
+    unsigned int fbo = 0;
     Color transparency_key;
     enum {
       solid,
