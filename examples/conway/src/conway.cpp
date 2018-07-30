@@ -52,11 +52,11 @@ int main() {
     while (!mainWindow.shouldExit()) {
         conway(B, A);
         mainWindow.show(B);
-        std::this_thread::sleep_for(400ms);
+        std::this_thread::sleep_for(40ms);
 
         conway(A, B);
         mainWindow.show(A);
-        std::this_thread::sleep_for(400ms);
+        std::this_thread::sleep_for(40ms);
     }
 }
 

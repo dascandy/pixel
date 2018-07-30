@@ -7,7 +7,7 @@ namespace Pixel {
   class Color {
   public:
     float r, g, b, a;
-    Color(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {}
+    Color(float r, float g, float b, float a = 1.0f) : r(r), g(g), b(b), a(a) {}
     Color(uint32_t value) {
       r = ((value >> 16) & 0xFF) / 255.0f;
       g = ((value >> 8) & 0xFF) / 255.0f;
