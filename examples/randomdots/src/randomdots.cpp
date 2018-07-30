@@ -1,4 +1,4 @@
-#include "pixel.hpp"
+#include <pixel.hpp>
 #include <thread>
 #include <chrono>
 using namespace std::literals::chrono_literals;
