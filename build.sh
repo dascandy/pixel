@@ -10,5 +10,6 @@ g++ -o examples/bin/image_swap examples/image_swap/src/image_swap.cpp $PIXEL_ARG
 g++ -o examples/bin/randomdots examples/randomdots/src/randomdots.cpp $PIXEL_ARGS -g
 g++ -o examples/bin/conway examples/conway/src/conway.cpp $PIXEL_ARGS -g
 g++ -o examples/bin/colors examples/colors/src/colors.cpp $PIXEL_ARGS -g
+g++ -o examples/bin/mousetrail examples/mousetrail/src/mousetrail.cpp $PIXEL_ARGS -g
 
 

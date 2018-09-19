@@ -36,9 +36,16 @@ namespace Pixel {
     void text(std::string_view str, uint32_t x, uint32_t y, float scale = 1, float rotation = 0);
     void show();
     Canvas read();
+    int mouseX();
+    int mouseY();
+    int mouseScroll();
+    bool mouseLeft(), mouseRight();
+    bool isPressed(int key);
   private:
     std::atomic<bool> shouldExit_ = false;
     int width, height;
+    int mouseX_, mouseY_, mouseZ_;
+    int mouseButtons;
     void* surface;
     void* context;
     int vs, fs, prog;
@@ -46,6 +53,7 @@ namespace Pixel {
     float baseScale = 1.0;
   };
 }
+
 /*
 - Drawing text (ascii monospace)
 - some screen effects

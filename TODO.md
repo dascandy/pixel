@@ -6,8 +6,8 @@ This is a list of all the TODOs that I still plan to implement.
 
 - Simple audio output: "play audio fragment X now"
 - Simple input: keyboard is-key-pressed function, mouse x/y + button info retrieval
+- Text rendering
 
 ** Small todos
 
-- Text rendering
 
