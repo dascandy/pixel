@@ -4,6 +4,8 @@
 #include <stdexcept>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 namespace Pixel {
   Canvas::Canvas(std::string filename) 
@@ -20,6 +22,10 @@ namespace Pixel {
     }
     stbi_image_free(data);
     glGenTextures(1, &texture_id);
+  }
+  void Canvas::write(const std::string& filename) 
+  {
+    stbi_write_png(filename.c_str(), width_, height_, 4, canvas_.data(), width_*4);
   }
   Canvas::Canvas(uint32_t width, uint32_t height) 
   : width_(width)

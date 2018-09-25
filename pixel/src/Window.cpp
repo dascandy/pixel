@@ -70,7 +70,7 @@ const char fragment_shader[] =
 "in vec4 f_pos;\n"
 "\n"
 "void main() {\n"
-"  vec4 color = texture(tex, 0.5 * (f_pos.xy * sc_attr.zw + sc_attr.xy) + vec2(0.5, 0.5));\n"
+"  vec4 color = texture(tex, 0.5 * (vec2(f_pos.x, -f_pos.y) * sc_attr.zw + sc_attr.xy) + vec2(0.5, 0.5));\n"
 "  if (keyed == 1 && key == color) discard;\n"
 "  gl_FragColor = color;\n"
 "}\n"
@@ -82,6 +82,10 @@ namespace Pixel {
   : width(width)
   , height(height)
   , surface(0)
+  , mouseX_(width/2)
+  , mouseY_(width/2)
+  , mouseZ_(0)
+  , mouseButtons(0)
   {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -214,14 +218,56 @@ namespace Pixel {
           // TODO
           } 
           break;
+        case SDL_KEYUP:
+          // TODO
+          break;
         case SDL_MOUSEBUTTONDOWN:
           // TODO
           break;
+        case SDL_MOUSEBUTTONUP:
+          // TODO
+          break;
         case SDL_MOUSEMOTION:
+          SDL_MouseMotionEvent* ev = (SDL_MouseMotionEvent*)&event;
+          mouseX_ = ev->x;
+          mouseY_ = ev->y;
+          mouseButtons = ev->state;
           // TODO
           break;
       }
     }
+  }
+
+  int Window::mouseX()
+  {
+    return this->mouseX_;
+  }
+
+  int Window::mouseY()
+  {
+    return this->mouseY_;
+  }
+
+  int Window::mouseScroll()
+  {
+    int delta = mouseZ_;
+    mouseZ_ = 0;
+    return delta;
+  }
+
+  bool Window::mouseLeft()
+  {
+    return mouseButtons & 1;
+  }
+
+  bool Window::mouseRight()
+  {
+    return mouseButtons & 2;
+  }
+
+  bool Window::isPressed(int key)
+  {
+    // TODO
   }
 }
 
