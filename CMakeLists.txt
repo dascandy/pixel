@@ -1,12 +1,17 @@
 
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_CXX_STANDARD 17)
+
+find_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(SDL2 REQUIRED)
+
 add_library(pixel STATIC 
   pixel/src/Window.cpp
   pixel/src/Canvas.cpp
 )
 target_include_directories(pixel PUBLIC pixel/include)
-target_link_libraries(pixel PUBLIC GLEW GL SDL2)
+target_link_libraries(pixel PUBLIC GLEW::GLEW OpenGL::GL SDL2)
 
 add_executable(image_swap examples/image_swap/src/image_swap.cpp)
 target_link_libraries(image_swap PRIVATE pixel)
