@@ -11,7 +11,7 @@ find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
 
-add_library(pixel STATIC 
+add_library(pixel STATIC
   pixel/src/Window.cpp
   pixel/src/Canvas.cpp
 )
@@ -48,7 +48,7 @@ write_basic_package_version_file(
 configure_package_config_file(
   pixelConfig.cmake.in
   ${PROJECT_BINARY_DIR}/pixelConfig.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/pixel
+  INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/pixel
   )
 
 install(
@@ -63,7 +63,7 @@ install(
   EXPORT pixelTarget
   FILE  pixelTarget.cmake
   NAMESPACE pixel::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/pixel
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/pixel
   )
 
 install(
@@ -73,7 +73,13 @@ install(
 
 install(
   FILES
+  ${PROJECT_SOURCE_DIR}/LICENSE
+  DESTINATION  ${CMAKE_INSTALL_DATADIR}/pixel/copyright
+  )
+
+install(
+  FILES
   ${PROJECT_BINARY_DIR}/pixelConfig.cmake
   ${PROJECT_BINARY_DIR}/pixelConfigVersion.cmake
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/pixel
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/pixel
   )
