@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+
+include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Target.cmake)
+include(CMakeFindDependencyMacro)
+
+find_dependency(GLEW REQUIRED)
+find_dependency(OpenGL REQUIRED)
+find_dependency(SDL2 REQUIRED)
+
+

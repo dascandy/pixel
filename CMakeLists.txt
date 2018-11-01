@@ -2,6 +2,11 @@
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_CXX_STANDARD 17)
 
+project(
+  pixel
+  VERSION 0.1
+  )
+
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
@@ -10,7 +15,13 @@ add_library(pixel STATIC
   pixel/src/Window.cpp
   pixel/src/Canvas.cpp
 )
-target_include_directories(pixel PUBLIC pixel/include)
+
+target_include_directories(
+  pixel
+  PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/pixel/include>
+  $<INSTALL_INTERFACE:include>
+  )
 target_link_libraries(pixel PUBLIC GLEW::GLEW OpenGL::GL SDL2)
 
 add_executable(image_swap examples/image_swap/src/image_swap.cpp)
@@ -25,4 +36,44 @@ add_executable(mousetrail examples/mousetrail/src/mousetrail.cpp)
 target_link_libraries(mousetrail PRIVATE pixel)
 
 
+# Install Section
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  ${PROJECT_BINARY_DIR}/pixelConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+  )
 
+configure_package_config_file(
+  pixelConfig.cmake.in
+  ${PROJECT_BINARY_DIR}/pixelConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/pixel
+  )
+
+install(
+  TARGETS pixel
+  EXPORT pixelTarget
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+
+install(
+  EXPORT pixelTarget
+  FILE  pixelTarget.cmake
+  NAMESPACE pixel::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/pixel
+  )
+
+install(
+  DIRECTORY pixel/include
+  DESTINATION  ${CMAKE_INSTALL_PREFIX}
+  )
+
+install(
+  FILES
+  ${PROJECT_BINARY_DIR}/pixelConfig.cmake
+  ${PROJECT_BINARY_DIR}/pixelConfigVersion.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/pixel
+  )
