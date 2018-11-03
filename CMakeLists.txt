@@ -22,7 +22,13 @@ target_include_directories(
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/pixel/include>
   $<INSTALL_INTERFACE:include>
   )
-target_link_libraries(pixel PUBLIC GLEW::GLEW OpenGL::GL SDL2)
+target_link_libraries(pixel PUBLIC GLEW::GLEW OpenGL::GL)
+
+if(NOT TARGET SDL2::SDL2)
+  target_link_libraries(pixel PUBLIC SDL2)
+else()
+  target_link_libraries(pixel PUBLIC SDL2::SDL2)
+endif()
 
 add_executable(image_swap examples/image_swap/src/image_swap.cpp)
 target_link_libraries(image_swap PRIVATE pixel)
