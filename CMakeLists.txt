@@ -8,6 +8,8 @@ project(
   )
 
 
+set(CMAKE_DEBUG_POSTFIX d)
+
 set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
