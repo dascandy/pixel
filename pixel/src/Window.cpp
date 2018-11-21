@@ -43,39 +43,40 @@ static int compileShader(int prog, const char* source, int type)
 }
 
 const char vertex_shader[] = 
-"#version 330\n"
-"\n"
-"uniform vec4 sc_pos;\n"
-"\n"
-"in vec4 in_pos;\n"
-"out vec4 f_pos;\n"
-"\n"
-"void main() {\n"
-"  mat2 r = mat2(sin(in_pos.w), cos(in_pos.w), cos(in_pos.w), -sin(in_pos.w));\n"
-"  gl_Position = vec4(((r * in_pos.xy) * sc_pos.z) + sc_pos.xy * sc_pos.z, in_pos.zw);\n"
-"  gl_Position = in_pos;\n"
-"  f_pos = in_pos;\n"
-"}\n"
-"\n"
-;
+R"(
+#version 330
+
+uniform vec4 sc_pos;
+
+in vec4 in_pos;
+out vec4 f_pos;
+
+void main() {
+  mat2 r = mat2(sin(in_pos.w), cos(in_pos.w), cos(in_pos.w), -sin(in_pos.w));
+  gl_Position = vec4(((r * in_pos.xy) * sc_pos.z) + sc_pos.xy * sc_pos.z, in_pos.zw);
+  gl_Position = in_pos;
+  f_pos = in_pos;
+}
+)";
+
 
 const char fragment_shader[] = 
-"#version 330\n"
-"\n"
-"uniform vec4 sc_attr;\n"
-"uniform sampler2D tex;\n"
-"uniform vec4 key;\n"
-"uniform int keyed;\n"
-"\n"
-"in vec4 f_pos;\n"
-"\n"
-"void main() {\n"
-"  vec4 color = texture(tex, 0.5 * (vec2(f_pos.x, -f_pos.y) * sc_attr.zw + sc_attr.xy) + vec2(0.5, 0.5));\n"
-"  if (keyed == 1 && key == color) discard;\n"
-"  gl_FragColor = color;\n"
-"}\n"
-"\n"
-;
+R"(
+#version 330
+
+uniform vec4 sc_attr;
+uniform sampler2D tex;
+uniform vec4 key;
+uniform int keyed;
+
+in vec4 f_pos;
+
+void main() {
+  vec4 color = texture(tex, 0.5 * (vec2(f_pos.x, -f_pos.y) * sc_attr.zw + sc_attr.xy) + vec2(0.5, 0.5));
+  if (keyed == 1 && key == color) discard;
+  gl_FragColor = color;
+}
+)";
 
 namespace Pixel {
   Window::Window(uint32_t width, uint32_t height, std::string name)
