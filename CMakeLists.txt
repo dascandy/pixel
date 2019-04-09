@@ -44,6 +44,12 @@ add_executable(colors examples/colors/src/colors.cpp)
 target_link_libraries(colors PRIVATE pixel)
 add_executable(mousetrail examples/mousetrail/src/mousetrail.cpp)
 target_link_libraries(mousetrail PRIVATE pixel)
+add_executable(platformer examples/platformer/src/platformer.cpp)
+target_link_libraries(platformer PRIVATE pixel)
+add_executable(simple examples/simple/src/simple.cpp)
+target_link_libraries(simple PRIVATE pixel)
+add_executable(starfield examples/starfield/src/starfield.cpp)
+target_link_libraries(starfield PRIVATE pixel)
 
 
 # Install Section
