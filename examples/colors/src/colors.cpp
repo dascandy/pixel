@@ -58,7 +58,7 @@ void step(Canvas& target, const Canvas& source) {
 }
 
 int main() {
-    Window mainWindow(640, 480, "Color cycles");
+    Window mainWindow(1920, 1080, "Color cycles");
     Canvas A(320, 240), B(320, 240);
     init(A);
 

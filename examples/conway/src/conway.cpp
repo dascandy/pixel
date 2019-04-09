@@ -45,7 +45,7 @@ void conway(Canvas& target, const Canvas& source) {
 }
 
 int main() {
-    Window mainWindow(640, 480, "Conway's Game of Life");
+    Window mainWindow(1920, 1080, "Conway's Game of Life");
     Canvas A(80, 50), B(80, 50);
     init(A);
 

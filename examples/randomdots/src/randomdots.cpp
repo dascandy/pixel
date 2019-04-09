@@ -19,7 +19,7 @@ void update_point_positions() {
 }
 
 int main() {
-    Window mainWindow(640, 480, "Hello world!");
+    Window mainWindow(1920, 1080, "Hello world!");
     Canvas canvas(80, 50);
 
     for(int i=0; i<nstep; ++i) {

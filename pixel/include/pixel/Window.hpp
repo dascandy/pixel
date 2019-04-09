@@ -32,9 +32,10 @@ namespace Pixel {
     bool shouldExit();
     void set_as_target();
     void show(const Subcanvas& canvas);
-    void draw(const Subcanvas& canvas, uint32_t x, uint32_t y, float scale = 1, float rotation = 0);
-    void text(std::string_view str, uint32_t x, uint32_t y, float scale = 1, float rotation = 0);
+    void draw(const Subcanvas& canvas, float x, float y, float scale = 1, float rotation = 0);
+    void text(std::string_view str, float x, float y, float scale = 1, float rotation = 0);
     void show();
+    void clear(Color col);
     Canvas read();
     int mouseX();
     int mouseY();
@@ -51,6 +52,7 @@ namespace Pixel {
     int vs, fs, prog;
     unsigned int vao, vbo;
     float baseScale = 1.0;
+    bool keys[256];
   };
 }
 

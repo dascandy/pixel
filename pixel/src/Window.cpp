@@ -52,13 +52,12 @@ in vec4 in_pos;
 out vec4 f_pos;
 
 void main() {
-  mat2 r = mat2(sin(in_pos.w), cos(in_pos.w), cos(in_pos.w), -sin(in_pos.w));
-  gl_Position = vec4(((r * in_pos.xy) * sc_pos.z) + sc_pos.xy * sc_pos.z, in_pos.zw);
-  gl_Position = in_pos;
+//  mat2 r = mat2(-sin(sc_pos.w), cos(sc_pos.w), cos(sc_pos.w), sin(sc_pos.w));
+  mat2 r = mat2(cos(sc_pos.w), sin(sc_pos.w), -sin(sc_pos.w), cos(sc_pos.w));
+  gl_Position = vec4(((r * in_pos.xy + sc_pos.xy) * sc_pos.z), in_pos.zw);
   f_pos = in_pos;
 }
 )";
-
 
 const char fragment_shader[] = 
 R"(
@@ -72,7 +71,7 @@ uniform int keyed;
 in vec4 f_pos;
 
 void main() {
-  vec4 color = texture(tex, 0.5 * (vec2(f_pos.x, -f_pos.y) * sc_attr.zw + sc_attr.xy) + vec2(0.5, 0.5));
+  vec4 color = texture(tex, (0.5 * f_pos.xy + vec2(0.5, 0.5) + sc_attr.xy) * sc_attr.zw);
   if (keyed == 1 && key == color) discard;
   gl_FragColor = color;
 }
@@ -139,6 +138,9 @@ namespace Pixel {
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 16, (void*)0);
     glBufferData(GL_ARRAY_BUFFER, sizeof(screen_quad), &screen_quad, GL_STATIC_DRAW);
     glDisable(GL_DEPTH_TEST);
+    glUseProgram(prog);
+    glActiveTexture(GL_TEXTURE0);
+    memset(keys, 0, sizeof(keys));
   }
   Window::~Window() {
     glDeleteVertexArrays(1, &vao);
@@ -159,7 +161,12 @@ namespace Pixel {
     glViewport(0, 0, width, height);
   }
 
-  void Window::text(std::string_view str, uint32_t x, uint32_t y, float scale, float rotation) {
+  void Window::clear(Color col) {
+    glClearColor(col.r, col.g, col.b, col.a);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
+
+  void Window::text(std::string_view str, float x, float y, float scale, float rotation) {
     // TODO
   }
 
@@ -170,23 +177,25 @@ namespace Pixel {
     return c;
   }
 
-  void Window::draw(const Subcanvas& canvas, uint32_t x, uint32_t y, float scale, float rotation) {
+  void Window::draw(const Subcanvas& canvas, float x, float y, float scale, float rotation) {
     int texture_id = canvas.canvas_->update_texture();
-    glUseProgram(prog);
     if (canvas.canvas_->opacity == Canvas::translucent) {
-      glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_BLEND);
     } else {
       glDisable(GL_BLEND);
     }
 
-    glUniform4f(glGetUniformLocation(prog, "sc_attr"), float(canvas.x) / canvas.canvas_->width(), float(canvas.y) / canvas.canvas_->height(), float(canvas.width) / canvas.canvas_->width(), float(canvas.height) / canvas.canvas_->height());
+    glUniform4f(glGetUniformLocation(prog, "sc_attr"), canvas.x, canvas.y, float(canvas.width) / canvas.canvas_->width(), float(canvas.height) / canvas.canvas_->height());
     glUniform4f(glGetUniformLocation(prog, "sc_pos"), x, y, scale / baseScale, rotation);
     glUniform4f(glGetUniformLocation(prog, "key"), canvas.canvas_->transparency_key.r, canvas.canvas_->transparency_key.g, canvas.canvas_->transparency_key.b, canvas.canvas_->transparency_key.a);
     glUniform1i(glGetUniformLocation(prog, "keyed"), canvas.canvas_->opacity == Canvas::keyed);
     glUniform1i(glGetUniformLocation(prog, "tex"), 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
+    static int lastTexture = texture_id;
+    if (texture_id != lastTexture) {
+        glBindTexture(GL_TEXTURE_2D, texture_id);
+        lastTexture = texture_id;
+    }
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glEnableVertexAttribArray(0);
@@ -196,7 +205,8 @@ namespace Pixel {
   }
 
   void Window::show(const Subcanvas& subcanvas) {
-    draw(subcanvas, subcanvas.canvas_->width() / 2, subcanvas.canvas_->height() / 2, baseScale, 0);
+    draw(subcanvas, 0, 0, baseScale, 0);
+
     show();
   }
 
@@ -216,24 +226,25 @@ namespace Pixel {
             case SDLK_ESCAPE:
               shouldExit_ = true;
               break;
-          // TODO
-          } 
+          }
+          if (event.key.keysym.sym <= 0x7F) {
+            keys[event.key.keysym.sym] = true;
+          }
           break;
         case SDL_KEYUP:
-          // TODO
+          if (event.key.keysym.sym <= 0x7F) {
+            keys[event.key.keysym.sym] = false;
+          }
           break;
         case SDL_MOUSEBUTTONDOWN:
-          // TODO
           break;
         case SDL_MOUSEBUTTONUP:
-          // TODO
           break;
         case SDL_MOUSEMOTION:
           SDL_MouseMotionEvent* ev = (SDL_MouseMotionEvent*)&event;
           mouseX_ = ev->x;
-          mouseY_ = ev->y;
+          mouseY_ = height - ev->y;
           mouseButtons = ev->state;
-          // TODO
           break;
       }
     }
@@ -268,7 +279,7 @@ namespace Pixel {
 
   bool Window::isPressed(int key)
   {
-    // TODO
+    return keys[key];
   }
 }
 

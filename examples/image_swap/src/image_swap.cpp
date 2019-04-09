@@ -7,7 +7,7 @@ using namespace Pixel;
 static const int npoint = 50;
 
 int main() {
-    Window mainWindow(640, 480, "Hello world!");
+    Window mainWindow(1920, 1080, "Hello world!");
     Canvas canvas("myimage.png");
 
     while (!mainWindow.shouldExit()) {
