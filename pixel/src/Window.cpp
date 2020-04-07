@@ -69,11 +69,12 @@ uniform vec4 key;
 uniform int keyed;
 
 in vec4 f_pos;
+out vec4 fragColor;
 
 void main() {
   vec4 color = texture(tex, (0.5 * f_pos.xy + vec2(0.5, 0.5) + sc_attr.xy) * sc_attr.zw);
   if (keyed == 1 && key == color) discard;
-  gl_FragColor = color;
+  fragColor = color;
 }
 )";
 
@@ -87,13 +88,14 @@ namespace Pixel {
   , mouseZ_(0)
   , mouseButtons(0)
   {
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
       throw std::runtime_error(std::string("SDL_Init failed: ") + SDL_GetError());
 
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
@@ -113,6 +115,11 @@ namespace Pixel {
 
     if (const auto err = glewInit(); err != GLEW_OK)
       throw std::runtime_error(std::string("glewInit failed: ") + SDL_GetError());
+
+    printf("glGetString GL_SHADING_LANGUAGE_VERSION:'%s'\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    printf("glGetString GL_VENDOR:'%s'\n", glGetString(GL_VENDOR));
+    printf("glGetString GL_RENDERER:'%s'\n", glGetString(GL_RENDERER));
+    printf("glGetString GL_VERSION:'%s'\n", glGetString(GL_VERSION));
 
     prog = glCreateProgram();
     fs = compileShader(prog, fragment_shader, GL_FRAGMENT_SHADER);
